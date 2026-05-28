@@ -4,7 +4,7 @@ Description: CodePipeline for packaging and deploying the OpenAI and Pinecone re
 Parameters:
   ProjectName:
     Type: String
-    Default: open-ai-agentic-rag
+    Default: open-ai-pinecone-recommendation-systems
   ArtifactBucketName:
     Type: String
     Default: mlopswithsagemaker111
@@ -40,7 +40,7 @@ Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${ProjectName}-endpoint-codebuild-role
+      RoleName: !Sub ${ProjectName}-cb-role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -81,7 +81,7 @@ Resources:
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${ProjectName}-endpoint-codepipeline-role
+      RoleName: !Sub ${ProjectName}-cp-role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

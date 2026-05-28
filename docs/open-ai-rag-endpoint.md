@@ -64,10 +64,10 @@ Create the CI/CD pipeline:
 aws cloudformation deploy \
   --region us-west-1 \
   --template-file infrastructure/open-ai-rag-endpoint-cicd.yaml \
-  --stack-name open-ai-agentic-rag-endpoint-cicd \
+  --stack-name open-ai-pinecone-recommendation-systems-endpoint-cicd \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameter-overrides \
-    ProjectName=open-ai-agentic-rag \
+    ProjectName=open-ai-pinecone-recommendation-systems \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
     RepositoryId=kalla86840/awspineconerecommendationsystems \
@@ -80,7 +80,7 @@ aws cloudformation deploy \
     PineconeDimension=1024
 ```
 
-The pipeline name is `open-ai-agentic-rag-endpoint-pipeline`. It deploys the `open-ai-agentic-rag-endpoint` stack. Use the `EndpointUrl` output for real-time inference.
+The pipeline name is `open-ai-pinecone-recommendation-systems-endpoint-pipeline`. It deploys the `open-ai-pinecone-recommendation-systems-endpoint` stack. Use the `EndpointUrl` output for real-time inference.
 
 Run the Pinecone recommendation systems task:
 
