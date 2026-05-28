@@ -184,6 +184,11 @@ CodePipeline build checks for placeholder secret values before deploying because
 a placeholder key causes the Lambda Function URL smoke test to return an HTTP
 error.
 
+If the Lambda Function URL returns `Forbidden`, redeploy this repository's
+current endpoint template. New public Lambda Function URLs require resource
+policy permissions for both `lambda:InvokeFunctionUrl` and
+`lambda:InvokeFunction` when invoked through the Function URL.
+
 ## Deploy Standalone RAG Endpoint Pipeline
 
 ```bash
