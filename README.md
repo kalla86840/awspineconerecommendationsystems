@@ -179,6 +179,11 @@ aws secretsmanager put-secret-value \
   --secret-string "pcsk-your-pinecone-api-key"
 ```
 
+Replace `pcsk-your-pinecone-api-key` with the real Pinecone API key. The
+CodePipeline build checks for placeholder secret values before deploying because
+a placeholder key causes the Lambda Function URL smoke test to return an HTTP
+error.
+
 ## Deploy Standalone RAG Endpoint Pipeline
 
 ```bash
