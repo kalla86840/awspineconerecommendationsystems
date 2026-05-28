@@ -17,7 +17,7 @@ GitHub repository
   -> CloudFormation deploys Lambda Function URL endpoints
   -> Lambda embeds the query with OpenAI and retrieves relevant RAG context from Pinecone
   -> Lambda calls OpenAI
-  -> Endpoint returns grounded real-time inference
+  -> Endpoint returns ranked recommendations or grounded real-time inference
 ```
 
 ## Standalone OpenAI RAG Endpoint
@@ -63,16 +63,6 @@ Request shape:
 }
 ```
 
-Pinecone semantic search-only task:
-
-```json
-{
-  "mode": "semantic_search",
-  "question": "What safety checks are required before connecting laundry equipment?",
-  "top_k": 5
-}
-```
-
 Pinecone recommendation systems task:
 
 ```json
@@ -85,6 +75,16 @@ Pinecone recommendation systems task:
     "content delivery",
     "EGIO"
   ],
+  "top_k": 5
+}
+```
+
+Pinecone semantic search compatibility task:
+
+```json
+{
+  "mode": "semantic_search",
+  "question": "What safety checks are required before connecting laundry equipment?",
   "top_k": 5
 }
 ```
@@ -147,12 +147,13 @@ The AWS defaults currently filled in are:
 - Region: `us-west-1`
 - Artifact bucket: `mlopswithsagemaker111`
 - CodeStar connection: `arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36`
-- GitHub repository: `kalla86840/awspineconesemanticsearch`
+- GitHub repository: `kalla86840/awspineconerecommendationsystems`
 - OpenAI secret ARN: `arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ`
 - Pinecone secret ARN: `arn:aws:secretsmanager:us-west-1:659613508664:secret:awspineconeapikey1-kiudra`
 - Pinecone index: `news-demo`
 - Pinecone host: `https://news-demo-4fe9eo0.svc.aped-4627-b74a.pinecone.io`
 - Pinecone namespace: `news`
+- Pinecone dimension: `1024`
 - Pinecone upsert on query: `false`, because `news-demo` already contains the news records.
 
 Update an existing secret:
@@ -190,13 +191,14 @@ aws cloudformation deploy \
     ProjectName=open-ai-agentic-rag \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
-    RepositoryId=kalla86840/awspineconesemanticsearch \
+    RepositoryId=kalla86840/awspineconerecommendationsystems \
     BranchName=main \
     OpenAIApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ \
     PineconeApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:awspineconeapikey1-kiudra \
     PineconeIndexName=news-demo \
     PineconeIndexHost=https://news-demo-4fe9eo0.svc.aped-4627-b74a.pinecone.io \
-    PineconeNamespace=news
+    PineconeNamespace=news \
+    PineconeDimension=1024
 ```
 
 Invoke after deployment:
@@ -207,20 +209,20 @@ curl -X POST "$ENDPOINT_URL" \
   -d @samples/open_ai_rag_endpoint_request.json
 ```
 
-Run the Pinecone semantic search task:
-
-```bash
-curl -X POST "$ENDPOINT_URL" \
-  -H "content-type: application/json" \
-  -d @samples/pinecone_semantic_search_request.json
-```
-
 Run the Pinecone recommendation systems task:
 
 ```bash
 curl -X POST "$ENDPOINT_URL" \
   -H "content-type: application/json" \
   -d @samples/pinecone_recommendations_request.json
+```
+
+Run the Pinecone semantic search compatibility task:
+
+```bash
+curl -X POST "$ENDPOINT_URL" \
+  -H "content-type: application/json" \
+  -d @samples/pinecone_semantic_search_request.json
 ```
 
 ## Deploy Agentic Hospital RAG Pipeline
@@ -235,7 +237,7 @@ aws cloudformation deploy \
     ProjectName=agentic-open-ai \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
-    RepositoryId=kalla86840/awspineconesemanticsearch \
+    RepositoryId=kalla86840/awspineconerecommendationsystems \
     BranchName=main \
     OpenAIApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ \
     OpenAIModel=gpt-5.2

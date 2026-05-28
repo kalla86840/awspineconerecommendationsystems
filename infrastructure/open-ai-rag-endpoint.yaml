@@ -1,5 +1,5 @@
 ﻿AWSTemplateFormatVersion: "2010-09-09"
-Description: Real-time AWS Lambda Function URL endpoint for OpenAI multi-agent RAG inference over a text document.
+Description: Real-time AWS Lambda Function URL endpoint for OpenAI and Pinecone recommendation systems.
 
 Parameters:
   ProjectName:
@@ -40,6 +40,10 @@ Parameters:
   OpenAIEmbeddingModel:
     Type: String
     Default: text-embedding-3-small
+  PineconeDimension:
+    Type: String
+    Default: "1024"
+    Description: Pinecone index vector dimension. Must match the OpenAI embedding dimension used by this endpoint.
 
 Resources:
   RagEndpointRole:
@@ -94,7 +98,7 @@ Resources:
           PINECONE_NAMESPACE: !Ref PineconeNamespace
           PINECONE_CLOUD: !Ref PineconeCloud
           PINECONE_REGION: !Ref PineconeRegion
-          PINECONE_DIMENSION: "1536"
+          PINECONE_DIMENSION: !Ref PineconeDimension
           PINECONE_UPSERT_ON_QUERY: "false"
           ENABLE_PINECONE: "true"
           RAG_KNOWLEDGE_PATH: knowledge/open_ai_rag_knowledge.txt

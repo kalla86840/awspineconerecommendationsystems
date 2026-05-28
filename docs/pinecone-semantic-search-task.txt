@@ -1,12 +1,14 @@
-Pinecone Semantic Search And Recommendation Systems Task Runbook
-===============================================================
+Pinecone Recommendation Systems Task Runbook
+===========================================
 
 Purpose
 -------
-Use Pinecone as the vector database for semantic search in the AWS OpenAI RAG
-real-time endpoint deployed through CodePipeline. The endpoint also runs a
-recommendation systems task by embedding a seed item, seed text, or user
-interest profile and returning the closest Pinecone records.
+Use Pinecone as the vector database for the AWS OpenAI recommendation systems
+real-time endpoint deployed through CodePipeline. The primary task embeds a
+seed item, seed text, or user interest profile with OpenAI using
+1024-dimensional vectors, queries Pinecone, and returns the closest records as
+ranked recommendations. Semantic search remains available as a compatibility
+mode over the same 1024-dimensional index.
 
 Pinecone Index
 --------------
@@ -16,6 +18,7 @@ Namespace: news
 Cloud: aws
 Region: us-east-1
 Type: Dense
+Dimension: 1024
 
 AWS Secrets Manager
 -------------------
@@ -38,23 +41,14 @@ PINECONE_INDEX_HOST=https://news-demo-4fe9eo0.svc.aped-4627-b74a.pinecone.io
 PINECONE_NAMESPACE=news
 PINECONE_CLOUD=aws
 PINECONE_REGION=us-east-1
-PINECONE_DIMENSION=1536
+PINECONE_DIMENSION=1024
 PINECONE_UPSERT_ON_QUERY=false
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
-Semantic Search Request
------------------------
-Use this request body against the deployed Lambda Function URL:
-
-{
-  "mode": "semantic_search",
-  "question": "What recent earnings call transcripts mention EGIO?",
-  "top_k": 5
-}
-
 Recommendation Systems Request
 ------------------------------
-Use this request body to ask Pinecone for similar records:
+Use this request body to ask Pinecone for similar records. This is the primary
+CodePipeline smoke test for this repository:
 
 {
   "mode": "recommendations",
@@ -76,33 +70,44 @@ You can also use a Pinecone record as the seed when you already know its id:
   "top_k": 5
 }
 
+Semantic Search Compatibility Request
+-------------------------------------
+Use this request body when you need the older semantic search behavior:
+
+{
+  "mode": "semantic_search",
+  "question": "What recent earnings call transcripts mention EGIO?",
+  "top_k": 5
+}
+
 Curl Test
 ---------
 Replace ENDPOINT_URL with the CloudFormation output named EndpointUrl:
 
 curl -X POST "$ENDPOINT_URL" ^
   -H "content-type: application/json" ^
-  -d @samples/pinecone_semantic_search_request.json
+  -d @samples/pinecone_recommendations_request.json
 
 curl -X POST "$ENDPOINT_URL" ^
   -H "content-type: application/json" ^
-  -d @samples/pinecone_recommendations_request.json
+  -d @samples/pinecone_semantic_search_request.json
 
 Expected Response Fields
 ------------------------
-For semantic search, retrieved_context contains ranked Pinecone matches,
-including id, title, content, score, and the original Pinecone metadata.
-
 For recommendation requests, recommendations contains ranked similar records,
 including id, title, content, score, and metadata. When seed_id is used, the
 seed record is excluded from the returned recommendations.
 
+For semantic search compatibility requests, retrieved_context contains ranked
+Pinecone matches, including id, title, content, score, and the original
+Pinecone metadata.
+
 CodePipeline Behavior
 ---------------------
-The endpoint deployment buildspec runs Pinecone semantic search and
-recommendation systems smoke tests after CloudFormation deploys the Lambda
-Function URL. The smoke tests succeed when retrieval_source is "pinecone" and
-the relevant result list contains at least one match.
+The endpoint deployment buildspec runs the Pinecone recommendation systems
+smoke test first after CloudFormation deploys the Lambda Function URL. It then
+runs semantic search as a compatibility check. Both use 1024-dimensional OpenAI
+embeddings and must query a Pinecone index with dimension 1024.
 
 Troubleshooting
 ---------------
@@ -115,4 +120,4 @@ existing news index so the endpoint does not insert local sample documents.
 
 If dimensions mismatch, confirm the Pinecone index dimension matches
 PINECONE_DIMENSION and the OpenAI embedding model dimension. The current project
-uses text-embedding-3-small with 1536 dimensions.
+uses text-embedding-3-small with 1024 dimensions.

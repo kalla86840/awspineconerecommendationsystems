@@ -10,7 +10,7 @@ This endpoint is a real-time AWS Lambda Function URL for OpenAI-backed multi-age
 - `infrastructure/open-ai-rag-endpoint.yaml`: Lambda Function URL CloudFormation template.
 - `infrastructure/open-ai-rag-endpoint-cicd.yaml`: CodePipeline/CodeBuild template for the endpoint.
 - `buildspec-open-ai-rag-endpoint.yml`: Packages, deploys, and smoke-tests the endpoint.
-- `docs/pinecone-semantic-search-task.txt`: Pinecone semantic search setup and test runbook.
+- `docs/pinecone-semantic-search-task.txt`: Pinecone recommendation systems setup and test runbook.
 - `samples/open_ai_rag_endpoint_request.json`: Example request.
 - `samples/open_ai_rag_endpoint_response.example.json`: Example response.
 
@@ -70,18 +70,27 @@ aws cloudformation deploy \
     ProjectName=open-ai-agentic-rag \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
-    RepositoryId=kalla86840/awspineconesemanticsearch \
+    RepositoryId=kalla86840/awspineconerecommendationsystems \
     BranchName=main \
     OpenAIApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ \
     PineconeApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:awspineconeapikey1-kiudra \
     PineconeIndexName=news-demo \
     PineconeIndexHost=https://news-demo-4fe9eo0.svc.aped-4627-b74a.pinecone.io \
-    PineconeNamespace=news
+    PineconeNamespace=news \
+    PineconeDimension=1024
 ```
 
 The pipeline name is `open-ai-agentic-rag-endpoint-pipeline`. It deploys the `open-ai-agentic-rag-endpoint` stack. Use the `EndpointUrl` output for real-time inference.
 
-Run a Pinecone semantic search task:
+Run the Pinecone recommendation systems task:
+
+```bash
+curl -X POST "$ENDPOINT_URL" \
+  -H "content-type: application/json" \
+  -d @samples/pinecone_recommendations_request.json
+```
+
+Run a Pinecone semantic search compatibility task:
 
 ```bash
 curl -X POST "$ENDPOINT_URL" \
