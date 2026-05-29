@@ -101,7 +101,7 @@ Agent sequence:
 
 The endpoint response includes `agents`, `answer`, `steps`, `safety_notes`, `citations`, `agent_consensus`, and `retrieved_context`.
 
-After deployment, get the URL from the `open-ai-pinecone-recommendation-systems-endpoint` CloudFormation stack output named `EndpointUrl`. The CodePipeline name is `open-ai-pinecone-recommendation-systems-endpoint-pipeline`.
+After deployment, get the URL from the endpoint CloudFormation stack output named `EndpointUrl`. The CodePipeline name is `open-ai-pinecone-memory-for-ai-agents`.
 
 ## Agentic Hospital RAG Endpoint
 
@@ -147,7 +147,7 @@ The AWS defaults currently filled in are:
 - Region: `us-west-1`
 - Artifact bucket: `mlopswithsagemaker111`
 - CodeStar connection: `arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36`
-- GitHub repository: `kalla86840/awspineconerecommendationsystems`
+- GitHub repository: `kalla86840/awspineconememoryforaiagents`
 - OpenAI secret ARN: `arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ`
 - Pinecone secret ARN: `arn:aws:secretsmanager:us-west-1:659613508664:secret:awspineconeapikey1-kiudra`
 - Pinecone index: `news-demo`
@@ -195,13 +195,14 @@ policy permissions for both `lambda:InvokeFunctionUrl` and
 aws cloudformation deploy \
   --region us-west-1 \
   --template-file infrastructure/open-ai-rag-endpoint-cicd.yaml \
-  --stack-name open-ai-pinecone-recommendation-systems-endpoint-cicd \
+  --stack-name open-ai-pinecone-memory-for-ai-agents-cicd \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameter-overrides \
-    ProjectName=open-ai-pinecone-recommendation-systems \
+    ProjectName=open-ai-pinecone-memory-for-ai-agents \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
-    RepositoryId=kalla86840/awspineconerecommendationsystems \
+    PipelineName=open-ai-pinecone-memory-for-ai-agents \
+    RepositoryId=kalla86840/awspineconememoryforaiagents \
     BranchName=main \
     OpenAIApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ \
     PineconeApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:awspineconeapikey1-kiudra \
@@ -247,7 +248,7 @@ aws cloudformation deploy \
     ProjectName=agentic-open-ai \
     ArtifactBucketName=mlopswithsagemaker111 \
     CodeStarConnectionArn=arn:aws:codeconnections:us-west-1:659613508664:connection/4ea8863c-728d-450a-8752-251946939b36 \
-    RepositoryId=kalla86840/awspineconerecommendationsystems \
+    RepositoryId=kalla86840/awspineconememoryforaiagents \
     BranchName=main \
     OpenAIApiKeySecretArn=arn:aws:secretsmanager:us-west-1:659613508664:secret:openai/api-key-6BGXhJ \
     OpenAIModel=gpt-5.2
